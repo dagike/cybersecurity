@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+build/
+.vercel/
+
+# env files (keep the examples)
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# logs
+*.log
+npm-debug.log*
+
+# editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# test / coverage
+coverage/

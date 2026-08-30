@@ -1,0 +1,28 @@
+{
+  "name": "notes-security-demo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The same notes app built twice: one with intentional vulnerabilities, one hardened.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev:vuln": "npm run dev --workspace apps/vulnerable",
+    "dev:fixed": "npm run dev --workspace apps/fixed",
+    "build:vuln": "npm run build --workspace apps/vulnerable",
+    "build:fixed": "npm run build --workspace apps/fixed",
+    "migrate:vuln": "npm run migrate --workspace apps/vulnerable",
+    "migrate:fixed": "npm run migrate --workspace apps/fixed",
+    "seed:vuln": "npm run seed --workspace apps/vulnerable",
+    "seed:fixed": "npm run seed --workspace apps/fixed",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}
