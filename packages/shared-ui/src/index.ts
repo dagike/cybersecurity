@@ -3,3 +3,6 @@
 // bundler transpiles them.
 
 export type { Note, User } from "./types";
+export { DemoBanner } from "./DemoBanner";
+export { Layout } from "./Layout";
+export type { LayoutProps, NavLink } from "./Layout";
