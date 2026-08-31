@@ -23,6 +23,7 @@
     "@types/react-dom": "^18.3.0",
     "@vercel/node": "^3.2.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "dotenv": "^16.4.5",
     "tsx": "^4.17.0",
     "typescript": "^5.5.4",
     "vercel": "^37.1.0",
