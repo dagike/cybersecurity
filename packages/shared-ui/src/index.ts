@@ -8,3 +8,7 @@ export { Layout } from "./Layout";
 export type { LayoutProps, NavLink } from "./Layout";
 export { CredentialsForm, LoginForm, RegisterForm } from "./LoginForm";
 export type { CredentialsFormProps } from "./LoginForm";
+export { NoteList } from "./NoteList";
+export type { NoteListProps } from "./NoteList";
+export { NoteEditor } from "./NoteEditor";
+export type { NoteEditorProps } from "./NoteEditor";
