@@ -12,3 +12,5 @@ export { NoteList } from "./NoteList";
 export type { NoteListProps } from "./NoteList";
 export { NoteEditor } from "./NoteEditor";
 export type { NoteEditorProps } from "./NoteEditor";
+export { createApiClient } from "./apiClient";
+export type { ApiClient, ApiClientOptions, ApiError } from "./apiClient";
