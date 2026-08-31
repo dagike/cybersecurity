@@ -2,6 +2,7 @@ import { DemoBanner, Layout, type User } from "@demo/shared-ui";
 import { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { api } from "./lib/api";
+import { AuthPages } from "./pages/AuthPages";
 import { GateScreen } from "./pages/GateScreen";
 
 type Status =
@@ -10,7 +11,6 @@ type Status =
   | { kind: "ready"; user: User | null };
 
 // Pages added in later commits.
-const AuthPages = () => <p>Sign in (coming soon).</p>;
 const NotesPage = () => <p>Notes (coming soon).</p>;
 const AttackConsole = () => <p>Attack console (coming soon).</p>;
 
@@ -66,7 +66,7 @@ export function App() {
         <Routes>
           <Route
             path="/"
-            element={user ? <NotesPage /> : <AuthPages />}
+            element={user ? <NotesPage /> : <AuthPages onAuthed={() => void bootstrap()} />}
           />
           <Route path="/attack" element={<AttackConsole />} />
         </Routes>
