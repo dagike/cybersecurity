@@ -4,14 +4,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { api } from "./lib/api";
 import { AuthPages } from "./pages/AuthPages";
 import { GateScreen } from "./pages/GateScreen";
+import { NotesPage } from "./pages/NotesPage";
 
 type Status =
   | { kind: "loading" }
   | { kind: "gate" }
   | { kind: "ready"; user: User | null };
 
-// Pages added in later commits.
-const NotesPage = () => <p>Notes (coming soon).</p>;
+// Added in a later commit.
 const AttackConsole = () => <p>Attack console (coming soon).</p>;
 
 export function App() {
