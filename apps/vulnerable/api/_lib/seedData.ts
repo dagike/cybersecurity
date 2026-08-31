@@ -39,3 +39,26 @@ export const SEED_NOTES: Record<string, Array<{ title: string; body: string }>> 
 export function weakHash(password: string): string {
   return createHash("md5").update(password).digest("hex");
 }
+
+type SqlExec = (text: string, params: unknown[]) => Promise<{ rows: Array<{ id: string }> }>;
+
+/** Wipes and rebuilds the fake data. Shared by the seed script and the cron. */
+export async function applySeed(exec: SqlExec): Promise<void> {
+  await exec("TRUNCATE notes, users RESTART IDENTITY CASCADE", []);
+
+  for (const user of SEED_USERS) {
+    const { rows } = await exec(
+      "INSERT INTO users (username, password_hash, is_admin) VALUES ($1, $2, $3) RETURNING id",
+      [user.username, weakHash(user.password), user.isAdmin],
+    );
+    const userId = rows[0]!.id;
+
+    for (const note of SEED_NOTES[user.username] ?? []) {
+      await exec("INSERT INTO notes (user_id, title, body) VALUES ($1, $2, $3)", [
+        userId,
+        note.title,
+        note.body,
+      ]);
+    }
+  }
+}

@@ -3,7 +3,7 @@
 
 import "dotenv/config";
 import { Client } from "pg";
-import { SEED_NOTES, SEED_USERS, weakHash } from "../api/_lib/seedData";
+import { SEED_USERS, applySeed } from "../api/_lib/seedData";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -14,23 +14,7 @@ if (!connectionString) {
 const client = new Client({ connectionString });
 await client.connect();
 try {
-  await client.query("TRUNCATE notes, users RESTART IDENTITY CASCADE");
-
-  for (const user of SEED_USERS) {
-    const { rows } = await client.query<{ id: string }>(
-      "INSERT INTO users (username, password_hash, is_admin) VALUES ($1, $2, $3) RETURNING id",
-      [user.username, weakHash(user.password), user.isAdmin],
-    );
-    const userId = rows[0]!.id;
-
-    for (const note of SEED_NOTES[user.username] ?? []) {
-      await client.query(
-        "INSERT INTO notes (user_id, title, body) VALUES ($1, $2, $3)",
-        [userId, note.title, note.body],
-      );
-    }
-  }
-
+  await applySeed((text, params) => client.query(text, params) as never);
   console.log(`seeded ${SEED_USERS.length} users`);
 } finally {
   await client.end();
