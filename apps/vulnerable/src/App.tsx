@@ -2,6 +2,7 @@ import { DemoBanner, Layout, type User } from "@demo/shared-ui";
 import { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { api } from "./lib/api";
+import { AttackConsole } from "./pages/AttackConsole";
 import { AuthPages } from "./pages/AuthPages";
 import { GateScreen } from "./pages/GateScreen";
 import { NotesPage } from "./pages/NotesPage";
@@ -10,9 +11,6 @@ type Status =
   | { kind: "loading" }
   | { kind: "gate" }
   | { kind: "ready"; user: User | null };
-
-// Added in a later commit.
-const AttackConsole = () => <p>Attack console (coming soon).</p>;
 
 export function App() {
   const [status, setStatus] = useState<Status>({ kind: "loading" });
