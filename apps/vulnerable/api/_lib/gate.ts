@@ -12,7 +12,9 @@ const encoder = new TextEncoder();
 export const GATE_COOKIE_NAME = COOKIE;
 
 function b64url(bytes: ArrayBuffer): string {
-  return Buffer.from(new Uint8Array(bytes)).toString("base64url");
+  let bin = "";
+  for (const b of new Uint8Array(bytes)) bin += String.fromCharCode(b);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
 async function hmac(message: string): Promise<string> {
