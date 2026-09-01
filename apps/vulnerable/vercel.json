@@ -11,5 +11,8 @@
         { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
       ]
     }
+  ],
+  "crons": [
+    { "path": "/api/admin/reseed", "schedule": "0 4 * * *" }
   ]
 }

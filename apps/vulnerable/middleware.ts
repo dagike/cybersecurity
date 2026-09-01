@@ -49,7 +49,8 @@ export default async function middleware(req: Request): Promise<Response | undef
     });
   }
 
-  if (pathname.startsWith("/api/") && pathname !== "/api/gate") {
+  const gateExempt = pathname === "/api/gate" || pathname === "/api/admin/reseed";
+  if (pathname.startsWith("/api/") && !gateExempt) {
     const cookie = readCookie(req.headers.get("cookie"), GATE_COOKIE_NAME);
     if (!(await isGateCookieValid(cookie))) {
       return new Response(JSON.stringify({ error: "gate_required" }), {

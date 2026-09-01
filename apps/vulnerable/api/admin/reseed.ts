@@ -5,13 +5,13 @@ import { withErrors } from "../_lib/errors";
 import { applySeed } from "../_lib/seedData";
 
 // Called on a schedule by Vercel Cron (see vercel.json) to wipe anything
-// visitors entered and restore the fake data. Guarded by a bearer secret so
-// only the cron can trigger it.
+// visitors entered and restore the fake data. Vercel Cron sends
+// `Authorization: Bearer <CRON_SECRET>`, so the endpoint checks that.
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 1 });
 
 function authorized(req: VercelRequest): boolean {
-  const secret = process.env.RESEED_SECRET;
+  const secret = process.env.CRON_SECRET;
   if (!secret) return false;
   const provided = (req.headers.authorization ?? "").replace(/^Bearer\s+/i, "");
   const a = Buffer.from(provided);
