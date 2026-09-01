@@ -1,10 +1,13 @@
 import { GATE_COOKIE_NAME, isGateCookieValid } from "./api/_lib/gate";
+import { checkRateLimit } from "./api/_lib/ratelimit";
 
-// Runs at the edge, before any function or static asset. Two safety controls
-// live here (rate limiting is added in a later commit):
+// Runs at the edge, before any function or static asset. Three safety controls
+// live here:
 //
 //  1. The whole app is disabled unless ENABLE_VULN_MODE === "true".
-//  2. When enabled, every /api route except /api/gate requires a valid
+//  2. Every request is rate limited per IP (tighter on /api/auth). This is a
+//     platform-level guard that holds regardless of the app's own flaws.
+//  3. When enabled, every /api route except /api/gate requires a valid
 //     demo-access cookie; without one it returns 403 gate_required and the
 //     frontend shows the password screen.
 
@@ -36,6 +39,16 @@ export default async function middleware(req: Request): Promise<Response | undef
   }
 
   const { pathname } = new URL(req.url);
+
+  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0]?.trim() || "0.0.0.0";
+  const limit = await checkRateLimit(ip, pathname);
+  if (!limit.ok) {
+    return new Response(JSON.stringify({ error: "Too many requests" }), {
+      status: 429,
+      headers: { "content-type": "application/json", "retry-after": "60" },
+    });
+  }
+
   if (pathname.startsWith("/api/") && pathname !== "/api/gate") {
     const cookie = readCookie(req.headers.get("cookie"), GATE_COOKIE_NAME);
     if (!(await isGateCookieValid(cookie))) {
