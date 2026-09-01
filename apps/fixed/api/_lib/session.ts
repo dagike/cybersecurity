@@ -10,6 +10,7 @@
 import { randomBytes } from "node:crypto";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { and, eq, gt } from "drizzle-orm";
+import { appendCookie } from "./cookies";
 import { db, sessions } from "./db";
 
 const COOKIE = "sid";
@@ -32,8 +33,8 @@ export async function createSession(res: VercelResponse, userId: string): Promis
   const token = randomBytes(32).toString("base64url");
   const expiresAt = new Date(Date.now() + TTL_MS);
   await db.insert(sessions).values({ id: token, userId, expiresAt });
-  res.setHeader(
-    "Set-Cookie",
+  appendCookie(
+    res,
     `${COOKIE}=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${TTL_MS / 1000}`,
   );
 }
@@ -54,7 +55,7 @@ export async function getSession(req: VercelRequest): Promise<Session | null> {
 export async function destroySession(req: VercelRequest, res: VercelResponse): Promise<void> {
   const token = parseCookies(req.headers.cookie)[COOKIE];
   if (token) await db.delete(sessions).where(eq(sessions.id, token));
-  res.setHeader("Set-Cookie", `${COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`);
+  appendCookie(res, `${COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`);
 }
 
 /** Returns the session, or writes 401 and returns null. */

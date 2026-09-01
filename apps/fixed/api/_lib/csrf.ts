@@ -9,6 +9,7 @@
 
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { appendCookie } from "./cookies";
 
 const COOKIE = "csrf";
 const UNSAFE = new Set(["POST", "PUT", "PATCH", "DELETE"]);
@@ -31,7 +32,7 @@ function safeEqual(a: string, b: string): boolean {
 /** Sets a fresh CSRF cookie. Call on any response that establishes identity. */
 export function issueCsrfToken(res: VercelResponse): void {
   const token = randomBytes(32).toString("base64url");
-  res.setHeader("Set-Cookie", `${COOKIE}=${token}; Path=/; Secure; SameSite=Lax`);
+  appendCookie(res, `${COOKIE}=${token}; Path=/; Secure; SameSite=Lax`);
 }
 
 /** Returns true if the request may proceed; otherwise writes 403 and returns false. */
