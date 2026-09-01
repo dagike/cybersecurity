@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@demo/shared-ui": "*",
+    "@neondatabase/serverless": "^0.9.4",
+    "drizzle-orm": "^0.33.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.0"
@@ -24,6 +26,7 @@
     "@vercel/node": "^3.2.0",
     "@vitejs/plugin-react": "^4.3.1",
     "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.24.0",
     "tsx": "^4.17.0",
     "typescript": "^5.5.4",
     "vercel": "^37.1.0",
