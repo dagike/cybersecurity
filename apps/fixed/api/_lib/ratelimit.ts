@@ -1,37 +1,42 @@
-// Rate limiting for the fixed app.
+// Rate limiting for the fixed app, backed by this app's own Postgres database
+// (no external cache service). A single atomic upsert bumps a fixed-window
+// counter and returns the new value.
 //
 // Two layers:
-//  - checkEdgeRateLimit runs in middleware.ts for every request (platform-level
-//    guard on the isolated Neon / Upstash resources).
+//  - checkEdgeRateLimit runs in middleware.ts for every request.
 //  - checkLoginRateLimit runs inside the login handler, keyed by IP + username,
 //    to cap credential guessing (see docs/writeup/broken-authentication.md).
-//
-// If the Upstash env vars are absent (local dev), limiting is skipped.
 
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
+import { sql } from "drizzle-orm";
+import { db } from "./db";
 
-const enabled =
-  !!process.env.UPSTASH_REDIS_REST_URL && !!process.env.UPSTASH_REDIS_REST_TOKEN;
-const redis = enabled ? Redis.fromEnv() : null;
+async function hit(key: string, limit: number, windowSeconds: number): Promise<boolean> {
+  const result = await db.execute<{ count: number }>(sql`
+    INSERT INTO rate_limits (key, count, expires_at)
+    VALUES (${key}, 1, now() + make_interval(secs => ${windowSeconds}))
+    ON CONFLICT (key) DO UPDATE SET
+      count = CASE WHEN rate_limits.expires_at < now() THEN 1
+                   ELSE rate_limits.count + 1 END,
+      expires_at = CASE WHEN rate_limits.expires_at < now()
+                        THEN now() + make_interval(secs => ${windowSeconds})
+                        ELSE rate_limits.expires_at END
+    RETURNING count
+  `);
 
-const edgeGlobal = redis
-  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, "60 s"), prefix: "rl:global" })
-  : null;
-const edgeAuth = redis
-  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, "60 s"), prefix: "rl:auth" })
-  : null;
-const login = redis
-  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, "60 s"), prefix: "rl:login" })
-  : null;
+  // Opportunistically clear expired rows so the table stays small.
+  if (Math.random() < 0.02) {
+    await db.execute(sql`DELETE FROM rate_limits WHERE expires_at < now()`);
+  }
 
-export async function checkEdgeRateLimit(ip: string, pathname: string): Promise<boolean> {
-  const limiter = pathname.startsWith("/api/auth/") ? edgeAuth : edgeGlobal;
-  if (!limiter) return true;
-  return (await limiter.limit(ip)).success;
+  const count = Number(result.rows[0]?.count ?? 1);
+  return count <= limit;
 }
 
-export async function checkLoginRateLimit(key: string): Promise<boolean> {
-  if (!login) return true;
-  return (await login.limit(key)).success;
+export function checkEdgeRateLimit(ip: string, pathname: string): Promise<boolean> {
+  const isAuth = pathname.startsWith("/api/auth/");
+  return hit(`edge:${isAuth ? "auth" : "global"}:${ip}`, isAuth ? 10 : 60, 60);
+}
+
+export function checkLoginRateLimit(key: string): Promise<boolean> {
+  return hit(`login:${key}`, 5, 60);
 }
