@@ -8,6 +8,13 @@
       "when": 1788277643784,
       "tag": "0000_jittery_namorita",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788310111302,
+      "tag": "0001_superb_stingray",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,12 @@
-import { boolean, index, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 // Fixed app schema.
 //
@@ -38,5 +46,14 @@ export const sessions = pgTable("sessions", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+});
+
+// Fixed-window rate-limit counters. Kept in this app's own database so the
+// fixed app needs no external cache service. Rows are cheap and short-lived;
+// see api/_lib/ratelimit.ts.
+export const rateLimits = pgTable("rate_limits", {
+  key: text("key").primaryKey(),
+  count: integer("count").notNull().default(0),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
 });
