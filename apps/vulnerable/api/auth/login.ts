@@ -22,11 +22,10 @@ export default withErrors(async (req: VercelRequest, res: VercelResponse) => {
   const { username, password } = (req.body ?? {}) as { username?: string; password?: string };
   const hash = weakHash(String(password));
 
+  // Built on one line: a `--` in the username comments out the rest, including
+  // the password check.
   const rows = await rawQuery<{ id: string; username: string; is_admin: boolean }>(
-    `SELECT id, username, is_admin
-       FROM users
-      WHERE username = '${username}'
-        AND password_hash = '${hash}'`,
+    `SELECT id, username, is_admin FROM users WHERE username = '${username}' AND password_hash = '${hash}'`,
   );
 
   const user = rows[0];

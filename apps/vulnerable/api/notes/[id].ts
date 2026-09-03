@@ -31,10 +31,7 @@ export default withErrors(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method === "PUT") {
     const { title, body } = (req.body ?? {}) as { title?: string; body?: string };
     const rows = await rawQuery<NoteRow>(
-      `UPDATE notes
-          SET title = '${title}', body = '${body}', updated_at = now()
-        WHERE id = '${id}'
-        RETURNING id, title, body, created_at, updated_at`,
+      `UPDATE notes SET title = '${title}', body = '${body}', updated_at = now() WHERE id = '${id}' RETURNING id, title, body, created_at, updated_at`,
     );
     if (!rows[0]) {
       res.status(404).json({ error: "Note not found" });

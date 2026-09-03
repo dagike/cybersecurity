@@ -17,9 +17,7 @@ export default withErrors(async (req: VercelRequest, res: VercelResponse) => {
   const hash = weakHash(String(password));
 
   const rows = await rawQuery<{ id: string; username: string; is_admin: boolean }>(
-    `INSERT INTO users (username, password_hash)
-     VALUES ('${username}', '${hash}')
-     RETURNING id, username, is_admin`,
+    `INSERT INTO users (username, password_hash) VALUES ('${username}', '${hash}') RETURNING id, username, is_admin`,
   );
 
   const user = rows[0]!;

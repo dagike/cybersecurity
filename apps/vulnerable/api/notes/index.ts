@@ -18,10 +18,7 @@ export default withErrors(async (req: VercelRequest, res: VercelResponse) => {
 
   if (req.method === "GET") {
     const rows = await rawQuery<NoteRow>(
-      `SELECT id, title, body, created_at, updated_at
-         FROM notes
-        WHERE user_id = '${session.userId}'
-        ORDER BY id`,
+      `SELECT id, title, body, created_at, updated_at FROM notes WHERE user_id = '${session.userId}' ORDER BY id`,
     );
     res.status(200).json({ notes: rows.map(toNote) });
     return;
@@ -30,9 +27,7 @@ export default withErrors(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method === "POST") {
     const { title, body } = (req.body ?? {}) as { title?: string; body?: string };
     const rows = await rawQuery<NoteRow>(
-      `INSERT INTO notes (user_id, title, body)
-       VALUES ('${session.userId}', '${title}', '${body}')
-       RETURNING id, title, body, created_at, updated_at`,
+      `INSERT INTO notes (user_id, title, body) VALUES ('${session.userId}', '${title}', '${body}') RETURNING id, title, body, created_at, updated_at`,
     );
     res.status(201).json({ note: toNote(rows[0]!) });
     return;

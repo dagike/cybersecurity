@@ -19,11 +19,7 @@ export default withErrors(async (req: VercelRequest, res: VercelResponse) => {
   const q = String(req.query.q ?? "");
 
   const rows = await rawQuery<NoteRow>(
-    `SELECT id, title, body, created_at, updated_at
-       FROM notes
-      WHERE user_id = '${session.userId}'
-        AND title ILIKE '%${q}%'
-      ORDER BY id`,
+    `SELECT id, title, body, created_at, updated_at FROM notes WHERE user_id = '${session.userId}' AND title ILIKE '%${q}%' ORDER BY id`,
   );
 
   res.status(200).json({ notes: rows.map(toNote) });
