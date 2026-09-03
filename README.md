@@ -18,8 +18,8 @@ flaws work and how to fix them.
 - It contains **only fake, seeded data** — no real accounts, emails, or credentials, ever.
 - The vulnerable behaviour is **off by default**. It runs only when `ENABLE_VULN_MODE=true` **and**
   the visitor passes a shared password gate.
-- Its database, cache, and secrets are **fully isolated** from the fixed app and from anything
-  else — separate Neon project, separate Upstash database, no shared credentials or network path.
+- Its database and secrets are **fully isolated** from the fixed app and from anything else —
+  separate Neon project, its own Upstash database, no shared credentials or network path.
 - Every page carries a visible "insecure demo" banner.
 - Both deployments are rate-limited at the edge regardless of any app-level flaw.
 - The vulnerable database is re-seeded on a schedule, wiping anything visitors enter.
@@ -51,18 +51,21 @@ flaws work and how to fix them.
 packages/shared-ui  apps/vulnerable      apps/fixed
  React components    Vite SPA + /api      Vite SPA + /api
  (consumed as        raw pg queries       Drizzle ORM
-  source)            unsigned cookie      argon2 + sessions
+  source)            unsigned cookie      argon2 + server sessions
     │                   │                    │
     │            Vercel project A     Vercel project B
-    │             ├ Neon project A     ├ Neon project B
-    │             └ Upstash DB A       └ Upstash DB B
-    │                (isolated — no shared secrets or network path)
+    │             ├ Neon project A     └ Neon project B
+    │             └ Upstash Redis        (rate limiting in
+    │               (rate limiting)       its own Neon DB)
+    │
+              isolated — no shared secrets or network path
 ```
 
 - **Frontend:** React + Vite, deployed on Vercel.
 - **Backend:** Vercel serverless functions (Node / TypeScript) in each app's `api/` folder.
 - **Database:** Neon (serverless Postgres) — one isolated project per app.
-- **Edge:** Vercel Edge Middleware + Upstash Redis for rate limiting — one isolated database per app.
+- **Edge:** Vercel Edge Middleware for rate limiting — the vulnerable app uses Upstash Redis,
+  the fixed app uses a `rate_limits` table in its own Neon database.
 
 ---
 
@@ -77,12 +80,23 @@ packages/shared-ui  apps/vulnerable      apps/fixed
 | Output | `dangerouslySetInnerHTML` | React escaping + CSP |
 | CSRF | none | double-submit token + SameSite + Origin check |
 | Errors | full stack traces in the response | generic message + request id |
+| Rate limiting | Upstash Redis (edge) | atomic upsert into its own Neon DB (edge) |
+
+---
+
+## Live demos
+
+- **Fixed:** _add Vercel URL after deploying `notes-demo-fixed`_
+- **Vulnerable:** _add Vercel URL after deploying `notes-demo-vulnerable`_ — gated;
+  the shared password is provided on request.
+
+Setup steps (Neon, Upstash, Vercel) are in [`docs/writeup/index.md`](docs/writeup/index.md).
 
 ---
 
 ## Local development
 
-Requires Node 20+, and a Neon project + Upstash database per app.
+Requires Node 20+, a Neon project per app, and (for the vulnerable app) an Upstash Redis database.
 
 ```bash
 npm install
