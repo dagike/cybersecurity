@@ -86,9 +86,9 @@ packages/shared-ui  apps/vulnerable      apps/fixed
 
 ## Live demos
 
-- **Fixed:** _add Vercel URL after deploying `notes-demo-fixed`_
-- **Vulnerable:** _add Vercel URL after deploying `notes-demo-vulnerable`_ — gated;
-  the shared password is provided on request.
+- **Fixed:** <https://cybersecurity-fixed.vercel.app/>
+- **Vulnerable:** <https://cybersecurity-vulnerable.vercel.app/> — gated; disabled unless
+  `ENABLE_VULN_MODE=true`, then behind a shared password provided on request.
 
 Setup steps (Neon, Upstash, Vercel) are in [`docs/writeup/index.md`](docs/writeup/index.md).
 
