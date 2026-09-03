@@ -9,7 +9,7 @@
 
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { appendCookie } from "./cookies";
+import { appendCookie } from "./cookies.js";
 
 const COOKIE = "csrf";
 const UNSAFE = new Set(["POST", "PUT", "PATCH", "DELETE"]);

@@ -1,10 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { and, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
-import { db, notes } from "../_lib/db";
-import { withErrors } from "../_lib/errors";
-import { requireSession } from "../_lib/session";
-import { toNote } from "../_lib/serialize";
+import { db, notes } from "../_lib/db.js";
+import { withErrors } from "../_lib/errors.js";
+import { requireSession } from "../_lib/session.js";
+import { toNote } from "../_lib/serialize.js";
 
 // The search term is passed to Drizzle's `ilike` as a bound parameter. The
 // query structure is fixed at author time; the term is only ever data, so it

@@ -1,12 +1,12 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { eq } from "drizzle-orm";
-import { issueCsrfToken } from "../_lib/csrf";
-import { db, users } from "../_lib/db";
-import { ApiError, withErrors } from "../_lib/errors";
-import { hashPassword, verifyPassword } from "../_lib/password";
-import { checkLoginRateLimit } from "../_lib/ratelimit";
-import { createSession } from "../_lib/session";
-import { credentialsSchema, parseBody } from "../_lib/validate";
+import { issueCsrfToken } from "../_lib/csrf.js";
+import { db, users } from "../_lib/db.js";
+import { ApiError, withErrors } from "../_lib/errors.js";
+import { hashPassword, verifyPassword } from "../_lib/password.js";
+import { checkLoginRateLimit } from "../_lib/ratelimit.js";
+import { createSession } from "../_lib/session.js";
+import { credentialsSchema, parseBody } from "../_lib/validate.js";
 
 // Fixes for the vulnerable login:
 //  - the lookup is a parameterized Drizzle query (no injection)

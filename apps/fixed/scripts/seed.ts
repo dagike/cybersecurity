@@ -3,9 +3,9 @@
 
 import "dotenv/config";
 import { sql } from "drizzle-orm";
-import { db, notes, users } from "../api/_lib/db";
-import { hashPassword } from "../api/_lib/password";
-import { SEED_NOTES, SEED_USERS } from "../api/_lib/seedData";
+import { db, notes, users } from "../api/_lib/db.js";
+import { hashPassword } from "../api/_lib/password.js";
+import { SEED_NOTES, SEED_USERS } from "../api/_lib/seedData.js";
 
 if (!process.env.DATABASE_URL) {
   console.error("DATABASE_URL is not set. Copy .env.example to .env first.");

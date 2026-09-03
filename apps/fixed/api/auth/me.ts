@@ -1,9 +1,9 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { eq } from "drizzle-orm";
-import { issueCsrfToken } from "../_lib/csrf";
-import { db, users } from "../_lib/db";
-import { ApiError, withErrors } from "../_lib/errors";
-import { getSession } from "../_lib/session";
+import { issueCsrfToken } from "../_lib/csrf.js";
+import { db, users } from "../_lib/db.js";
+import { ApiError, withErrors } from "../_lib/errors.js";
+import { getSession } from "../_lib/session.js";
 
 export default withErrors(async (req: VercelRequest, res: VercelResponse) => {
   const session = await getSession(req);

@@ -1,12 +1,12 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { checkCsrf } from "../_lib/csrf";
-import { db, notes } from "../_lib/db";
-import { ApiError, withErrors } from "../_lib/errors";
-import { requireSession } from "../_lib/session";
-import { toNote } from "../_lib/serialize";
-import { noteSchema, parseBody } from "../_lib/validate";
+import { checkCsrf } from "../_lib/csrf.js";
+import { db, notes } from "../_lib/db.js";
+import { ApiError, withErrors } from "../_lib/errors.js";
+import { requireSession } from "../_lib/session.js";
+import { toNote } from "../_lib/serialize.js";
+import { noteSchema, parseBody } from "../_lib/validate.js";
 
 // Every query is scoped by BOTH the note id and the owner's user id. A note
 // that exists but belongs to someone else is indistinguishable from one that

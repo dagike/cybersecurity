@@ -1,5 +1,5 @@
 import { next } from "@vercel/edge";
-import { checkEdgeRateLimit } from "./api/_lib/ratelimit";
+import { checkEdgeRateLimit } from "./api/_lib/ratelimit.js";
 
 // Runs at the edge before any function. It applies the per-IP rate limit (a
 // platform-level guard, independent of the app's own checks) and sets the

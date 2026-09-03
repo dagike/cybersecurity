@@ -1,11 +1,11 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { eq } from "drizzle-orm";
-import { issueCsrfToken } from "../_lib/csrf";
-import { db, users } from "../_lib/db";
-import { ApiError, withErrors } from "../_lib/errors";
-import { hashPassword } from "../_lib/password";
-import { createSession } from "../_lib/session";
-import { credentialsSchema, parseBody } from "../_lib/validate";
+import { issueCsrfToken } from "../_lib/csrf.js";
+import { db, users } from "../_lib/db.js";
+import { ApiError, withErrors } from "../_lib/errors.js";
+import { hashPassword } from "../_lib/password.js";
+import { createSession } from "../_lib/session.js";
+import { credentialsSchema, parseBody } from "../_lib/validate.js";
 
 export default withErrors(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method !== "POST") throw new ApiError(405, "Method not allowed");

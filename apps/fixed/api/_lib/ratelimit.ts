@@ -8,7 +8,7 @@
 //    to cap credential guessing (see docs/writeup/broken-authentication.md).
 
 import { sql } from "drizzle-orm";
-import { db } from "./db";
+import { db } from "./db.js";
 
 async function hit(key: string, limit: number, windowSeconds: number): Promise<boolean> {
   const result = await db.execute<{ count: number }>(sql`

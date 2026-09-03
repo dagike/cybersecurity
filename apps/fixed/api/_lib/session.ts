@@ -10,8 +10,8 @@
 import { randomBytes } from "node:crypto";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { and, eq, gt } from "drizzle-orm";
-import { appendCookie } from "./cookies";
-import { db, sessions } from "./db";
+import { appendCookie } from "./cookies.js";
+import { db, sessions } from "./db.js";
 
 const COOKIE = "sid";
 const TTL_MS = 7 * 24 * 60 * 60 * 1000;
