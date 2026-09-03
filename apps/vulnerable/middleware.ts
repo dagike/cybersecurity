@@ -41,8 +41,15 @@ export default async function middleware(req: Request): Promise<Response | undef
   const { pathname } = new URL(req.url);
 
   const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0]?.trim() || "0.0.0.0";
-  const limit = await checkRateLimit(ip, pathname);
-  if (!limit.ok) {
+
+  // Fail open: an Upstash error must not take the site down.
+  let overLimit = false;
+  try {
+    overLimit = !(await checkRateLimit(ip, pathname)).ok;
+  } catch (err) {
+    console.error("edge rate limit check failed", err);
+  }
+  if (overLimit) {
     return new Response(JSON.stringify({ error: "Too many requests" }), {
       status: 429,
       headers: { "content-type": "application/json", "retry-after": "60" },
@@ -51,8 +58,15 @@ export default async function middleware(req: Request): Promise<Response | undef
 
   const gateExempt = pathname === "/api/gate" || pathname === "/api/admin/reseed";
   if (pathname.startsWith("/api/") && !gateExempt) {
-    const cookie = readCookie(req.headers.get("cookie"), GATE_COOKIE_NAME);
-    if (!(await isGateCookieValid(cookie))) {
+    // Fail closed: any error checking the gate cookie denies access.
+    let valid = false;
+    try {
+      const cookie = readCookie(req.headers.get("cookie"), GATE_COOKIE_NAME);
+      valid = await isGateCookieValid(cookie);
+    } catch (err) {
+      console.error("gate cookie check failed", err);
+    }
+    if (!valid) {
       return new Response(JSON.stringify({ error: "gate_required" }), {
         status: 403,
         headers: { "content-type": "application/json" },
