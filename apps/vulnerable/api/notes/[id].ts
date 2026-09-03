@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { rawQuery } from "../_lib/db";
-import { withErrors } from "../_lib/errors";
-import { type NoteRow, toNote } from "../_lib/serialize";
-import { requireSession } from "../_lib/session";
+import { rawQuery } from "../_lib/db.js";
+import { withErrors } from "../_lib/errors.js";
+import { type NoteRow, toNote } from "../_lib/serialize.js";
+import { requireSession } from "../_lib/session.js";
 
 // Every query here matches on the note id alone — it never checks that the
 // note belongs to the logged-in user. Because note ids are a short sequence,

@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { rawQuery } from "../_lib/db";
-import { withErrors } from "../_lib/errors";
-import { getSession } from "../_lib/session";
+import { rawQuery } from "../_lib/db.js";
+import { withErrors } from "../_lib/errors.js";
+import { getSession } from "../_lib/session.js";
 
 // The user id comes straight from the cookie and is concatenated into the
 // query, so the session cookie is itself a SQL injection vector.

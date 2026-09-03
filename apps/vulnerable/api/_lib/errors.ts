@@ -7,7 +7,7 @@
 // and a request id instead.
 
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { debugState } from "./db";
+import { debugState } from "./db.js";
 
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown | Promise<unknown>;
 

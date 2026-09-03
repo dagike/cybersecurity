@@ -1,5 +1,5 @@
-import { GATE_COOKIE_NAME, isGateCookieValid } from "./api/_lib/gate";
-import { checkRateLimit } from "./api/_lib/ratelimit";
+import { GATE_COOKIE_NAME, isGateCookieValid } from "./api/_lib/gate.js";
+import { checkRateLimit } from "./api/_lib/ratelimit.js";
 
 // Runs at the edge, before any function or static asset. Three safety controls
 // live here:

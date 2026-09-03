@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { rawQuery } from "../_lib/db";
-import { withErrors } from "../_lib/errors";
-import { weakHash } from "../_lib/seedData";
-import { setSession } from "../_lib/session";
+import { rawQuery } from "../_lib/db.js";
+import { withErrors } from "../_lib/errors.js";
+import { weakHash } from "../_lib/seedData.js";
+import { setSession } from "../_lib/session.js";
 
 // No input validation, and the INSERT is built by string concatenation like
 // every other query in this app.

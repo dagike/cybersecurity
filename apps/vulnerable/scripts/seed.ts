@@ -3,7 +3,7 @@
 
 import "dotenv/config";
 import { Client } from "pg";
-import { SEED_USERS, applySeed } from "../api/_lib/seedData";
+import { SEED_USERS, applySeed } from "../api/_lib/seedData.js";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {

@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { rawQuery } from "../_lib/db";
-import { withErrors } from "../_lib/errors";
-import { type NoteRow, toNote } from "../_lib/serialize";
-import { requireSession } from "../_lib/session";
+import { rawQuery } from "../_lib/db.js";
+import { withErrors } from "../_lib/errors.js";
+import { type NoteRow, toNote } from "../_lib/serialize.js";
+import { requireSession } from "../_lib/session.js";
 
 // GET  -> list the current user's notes
 // POST -> create a note

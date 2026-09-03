@@ -1,8 +1,8 @@
 import { timingSafeEqual } from "node:crypto";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Pool } from "pg";
-import { withErrors } from "../_lib/errors";
-import { applySeed } from "../_lib/seedData";
+import { withErrors } from "../_lib/errors.js";
+import { applySeed } from "../_lib/seedData.js";
 
 // Called on a schedule by Vercel Cron (see vercel.json) to wipe anything
 // visitors entered and restore the fake data. Vercel Cron sends

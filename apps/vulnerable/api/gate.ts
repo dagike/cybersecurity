@@ -1,7 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { withErrors } from "./_lib/errors";
-import { issueGateCookie } from "./_lib/gate";
+import { withErrors } from "./_lib/errors.js";
+import { issueGateCookie } from "./_lib/gate.js";
 
 // Exchanges the shared demo password for a short-lived access cookie. This is
 // the one endpoint that stays reachable before the gate is passed.
