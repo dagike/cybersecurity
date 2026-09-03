@@ -42,7 +42,16 @@ export default async function middleware(req: Request): Promise<Response> {
   const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0]?.trim() || "0.0.0.0";
   const { pathname } = new URL(req.url);
 
-  if (!(await checkEdgeRateLimit(ip, pathname))) {
+  // Fail open: a transient database error in the limiter must not take the
+  // whole site down. The per-route limiters still apply on the hot paths.
+  let overLimit = false;
+  try {
+    overLimit = !(await checkEdgeRateLimit(ip, pathname));
+  } catch (err) {
+    console.error("edge rate limit check failed", err);
+  }
+
+  if (overLimit) {
     return new Response(JSON.stringify({ error: "Too many requests" }), {
       status: 429,
       headers: { "content-type": "application/json", "retry-after": "60", ...SECURITY_HEADERS },
