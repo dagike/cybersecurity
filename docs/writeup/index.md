@@ -15,7 +15,10 @@ Each vulnerability is written up with the same structure (see [`_template.md`](_
 | 6 | [Verbose error messages](verbose-errors.md) | A05 – Security Misconfiguration | CWE-209 | [verbose-errors.http](../exploits/verbose-errors.http) |
 
 Every vulnerable behaviour is also runnable from the vulnerable app's **Attack
-console** page.
+console** page. Note that every endpoint except `/api/auth/*` and `/api/gate`
+requires a session — log in first (or run the auth-bypass request), otherwise
+the exploit requests return `401 Not authenticated`. See
+[`docs/exploits/README.md`](../exploits/README.md).
 
 ---
 

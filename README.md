@@ -39,6 +39,19 @@ flaws work and how to fix them.
 | 5 | Missing CSRF protection | A01:2021 Broken Access Control | [csrf.md](docs/writeup/csrf.md) |
 | 6 | Verbose error messages | A05:2021 Security Misconfiguration | [verbose-errors.md](docs/writeup/verbose-errors.md) |
 
+### Trying the exploits
+
+> **Log in first.** Every endpoint except `/api/auth/*` and the demo gate requires a
+> session cookie, so the exploit requests return `401 Not authenticated` until you have one.
+
+- **In the vulnerable app:** open the **Attack console** page. Run *SQL injection — log in
+  without a password* first (it sets the session cookie), then the rest of the cards work in
+  any order.
+- **From the command line / REST client:** use [`docs/exploits/`](docs/exploits/). Each file's
+  `@cookie` value comes from logging in — either a normal login, or the auth-bypass request in
+  `sql-injection.http`. Against the deployed vulnerable app you must also pass the demo gate
+  first (`POST /api/gate`) and keep the `demo_access` cookie.
+
 ---
 
 ## Architecture
