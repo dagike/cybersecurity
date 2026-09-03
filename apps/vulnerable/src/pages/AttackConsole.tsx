@@ -77,9 +77,8 @@ const ATTACKS: Attack[] = [
     id: "stored-xss",
     title: "Stored XSS — save an executing payload",
     description:
-      "Creates a note whose body is HTML. Open it from the Notes page (or reload) and the script runs, with access to the non-HttpOnly session cookie.",
-    defaultPayload:
-      '<img src=x onerror="alert(\'xss: \'+document.cookie)">',
+      "Creates a note whose body is HTML. Open it from the Notes page (or reload) and the handler runs, reading the non-HttpOnly session cookie. The payload avoids single quotes so it survives the string-concatenated INSERT; backticks work for a real exfil call.",
+    defaultPayload: '<img src=x onerror="alert(document.cookie)">',
     run: (p) => raw("POST", "/api/notes", { title: "xss demo", body: p }),
   },
   {
