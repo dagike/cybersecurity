@@ -11,17 +11,23 @@
     "node": ">=20"
   },
   "scripts": {
+    "dev": "run-p dev:vuln dev:fixed",
     "dev:vuln": "npm run dev --workspace apps/vulnerable",
     "dev:fixed": "npm run dev --workspace apps/fixed",
+    "build": "run-s build:vuln build:fixed",
     "build:vuln": "npm run build --workspace apps/vulnerable",
     "build:fixed": "npm run build --workspace apps/fixed",
     "migrate:vuln": "npm run migrate --workspace apps/vulnerable",
     "migrate:fixed": "npm run migrate --workspace apps/fixed",
     "seed:vuln": "npm run seed --workspace apps/vulnerable",
     "seed:fixed": "npm run seed --workspace apps/fixed",
+    "typecheck": "run-s typecheck:*",
+    "typecheck:vuln": "tsc -p apps/vulnerable/tsconfig.json --noEmit",
+    "typecheck:fixed": "tsc -p apps/fixed/tsconfig.json --noEmit",
     "test": "vitest run"
   },
   "devDependencies": {
+    "npm-run-all2": "^6.2.2",
     "typescript": "^5.5.4",
     "vitest": "^2.0.5"
   }
